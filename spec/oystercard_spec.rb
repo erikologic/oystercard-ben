@@ -1,8 +1,11 @@
 require 'oystercard'
-require 'journey'
+# require 'journey'
 
 describe Oystercard do
   let(:oystercard){described_class.new}
+
+  # MIN_FARE = Journey::MIN_FARE
+  MIN_FARE = 1
 
   describe '#balance' do
     it 'checks that the oystercard has a balance' do
@@ -18,13 +21,13 @@ describe Oystercard do
       expect(oystercard).to respond_to(:top_up).with(1).argument
     end
     it 'the oystercard will accept a value and store it' do
-      expect{oystercard.top_up Journey::MIN_FARE}.to change {oystercard.balance }.by (Journey::MIN_FARE)
+      expect{oystercard.top_up MIN_FARE}.to change {oystercard.balance }.by (MIN_FARE)
     end
   end
   describe 'MAX_LIMIT' do
     it 'will raise an error if top up limit is exceeded' do
       oystercard.top_up(Oystercard::MAX_LIMIT)
-      expect{oystercard.top_up(Journey::MIN_FARE)}.to raise_error("Limit of #{Oystercard::MAX_LIMIT} exceeded, can not top up the card.")
+      expect{oystercard.top_up(MIN_FARE)}.to raise_error("Limit of #{Oystercard::MAX_LIMIT} exceeded, can not top up the card.")
     end
   end
 
@@ -38,16 +41,16 @@ describe Oystercard do
 #
 #   describe 'deduct money' do
 #   it "will deduct the amount off the card" do
-#     expect{oystercard.deduct (Journey::MIN_FARE)}.to change {oystercard.balance}.by (-Journey::MIN_FARE)
+#     expect{oystercard.deduct (MIN_FARE)}.to change {oystercard.balance}.by (-MIN_FARE)
 #   end
 # end
 
   describe '#touch_in' do
     let(:entry_station){double :entry_station}
 
-    context 'with min limit on balace' do
+    context 'with min limit on balance' do
       before(:each) do
-        oystercard.top_up(Journey::MIN_FARE)
+        oystercard.top_up(MIN_FARE)
       end
       it 'can touch in' do
         expect{oystercard.touch_in(entry_station)}.not_to raise_error
@@ -65,11 +68,12 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    let(:entry_station){double :entry_station}
-    let(:exit_station){double :exit_station}
-
+    let(:entry_station) {double :station}
+    let(:exit_station)  {double :station}
     before(:each) do
-      oystercard.top_up(Journey::MIN_FARE)
+      oystercard.top_up(MIN_FARE)
+      allow(entry_station).to receive(:zone).and_return(1)
+      allow(exit_station).to receive(:zone).and_return(1)
     end
 
     it 'can touch out' do
@@ -77,7 +81,7 @@ describe Oystercard do
     end
     it 'to be charged when we touch out of our journey' do
       oystercard.touch_in(entry_station)
-      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by (-Journey::MIN_FARE)
+      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by (-MIN_FARE)
     end
   end
 end
