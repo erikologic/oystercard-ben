@@ -78,8 +78,8 @@ it 'so customer knows where has been, oystercard tracks journeys' do
   oystercard.touch_in(entry_station_obj)
   oystercard.touch_out(exit_station_obj)
   # expect(oystercard.journey_history.first).to eq(journey)
-  expect(oystercard.journey_history.first.entry_station.name).to eq(journey.entry_station.name)
-  expect(oystercard.journey_history.first.exit_station.name).to eq(journey.exit_station.name)
+  expect(oystercard.journeylog.journeys.first.entry_station.name).to eq(journey.entry_station.name)
+  expect(oystercard.journeylog.journeys.first.exit_station.name).to eq(journey.exit_station.name)
 
 end
 # In order to know how far I have travelled
@@ -113,5 +113,4 @@ end
 # In order to be charged the correct amount
 # As a customer
 # I need to have the correct fare calculated
-
 end
